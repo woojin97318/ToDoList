@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @Table(name = "tb_todo", schema = "todolist")
-public class Todo extends BaseEntity {
+public class Todo {//extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
