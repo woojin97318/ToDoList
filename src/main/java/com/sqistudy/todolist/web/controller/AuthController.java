@@ -28,6 +28,9 @@ public class AuthController {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
     }
 
+    /**
+     * 로그인
+     */
     @PostMapping("/authenticate")
     public ResponseEntity<TokenDTO> authorize(@Valid @RequestBody LoginDTO login) {
 

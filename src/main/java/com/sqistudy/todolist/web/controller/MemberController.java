@@ -38,15 +38,15 @@ public class MemberController {
         return ResponseEntity.ok(memberService.signup(memberDTO));
     }
 
-    @GetMapping("/user")
+    @GetMapping("/member")
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    public ResponseEntity<MemberDTO> getMyUserInfo(HttpServletRequest request) {
-        return ResponseEntity.ok(memberService.getMyUserWithAuthorities());
+    public ResponseEntity<MemberDTO> getMyMemberInfo(HttpServletRequest request) {
+        return ResponseEntity.ok(memberService.getMyMemberWithAuthorities());
     }
 
-    @GetMapping("/user/{username}")
+    @GetMapping("/member/{email}")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public ResponseEntity<MemberDTO> getUserInfo(@PathVariable String username) {
-        return ResponseEntity.ok(memberService.getUserWithAuthorities(username));
+    public ResponseEntity<MemberDTO> getMemberInfo(@PathVariable String email) {
+        return ResponseEntity.ok(memberService.getMemberWithAuthorities(email));
     }
 }

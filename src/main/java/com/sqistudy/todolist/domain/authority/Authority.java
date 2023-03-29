@@ -16,9 +16,6 @@ import lombok.*;
 public class Authority {
 
    @Id
-   @Column(name = "authority_id")
-   private String authorityId;
-
    @Column(name = "authority_name")
    private String authorityName;
 }

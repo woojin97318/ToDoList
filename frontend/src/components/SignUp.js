@@ -1,40 +1,48 @@
-import React, { useState } from "react";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import styled from "styled-components";
-import axios from "axios";
+import React, { useState } from 'react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import styled from 'styled-components';
+import * as ApiService from '../service/ApiService';
+import { useNavigate } from 'react-router-dom';
 
 const SignUp = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [name, setName] = useState("");
+  const navigate = useNavigate();
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [name, setName] = useState('');
   const [birthday, setBirthday] = useState(null);
-  const [gender, setGender] = useState("");
-  const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
-  const [error, setError] = useState("");
+  const [gender, setGender] = useState('');
+  const [phone, setPhone] = useState('');
+  const [error, setError] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      setError("비밀번호가 일치하지 않습니다.");
+      setError('비밀번호가 일치하지 않습니다.');
     } else {
-      setError("");
+      setError('');
 
       const apiParam = {
         email: email,
         password: password,
-        name: name,
-        birthday: birthday,
-        gender: gender,
-        phone: phone,
-        address: address,
+        nickname: name,
+        birthDate: birthday,
+        genderCode: gender,
+        phoneNo: phone
       };
 
-      // axios.get(``);
+      ApiService.postMethod(`signup`, apiParam, {}).then((response) => {
+        console.log(response);
 
-      console.log(apiParam);
+        if (response.status === 200) {
+          alert('회원가입이 완료되었습니다.');
+          navigate('/');
+        } else {
+          alert(response.data.message);
+        }
+      });
     }
   };
 
@@ -43,12 +51,7 @@ const SignUp = () => {
       <Title>회원가입</Title>
       <Form onSubmit={handleSubmit}>
         <Label>이메일</Label>
-        <Input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+        <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
 
         <Label>비밀번호</Label>
         <Input
@@ -69,18 +72,10 @@ const SignUp = () => {
         {error && <ErrorMessage>{error}</ErrorMessage>}
 
         <Label>이름</Label>
-        <Input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
+        <Input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
 
         <Label>생일</Label>
-        <DatePicker
-          selected={birthday}
-          onChange={(date) => setBirthday(date)}
-        />
+        <DatePicker selected={birthday} onChange={(date) => setBirthday(date)} />
 
         <Label>성별</Label>
         <RadioGroup>
@@ -88,7 +83,7 @@ const SignUp = () => {
             type="radio"
             name="gender"
             value="M"
-            checked={gender === "M"}
+            checked={gender === 'M'}
             onChange={(e) => setGender(e.target.value)}
             required
           />
@@ -97,7 +92,7 @@ const SignUp = () => {
             type="radio"
             name="gender"
             value="F"
-            checked={gender === "F"}
+            checked={gender === 'F'}
             onChange={(e) => setGender(e.target.value)}
             required
           />
@@ -105,20 +100,7 @@ const SignUp = () => {
         </RadioGroup>
 
         <Label>전화번호</Label>
-        <Input
-          type="tel"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          required
-        />
-
-        <Label>주소</Label>
-        <Input
-          type="text"
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-          required
-        />
+        <Input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required />
 
         <Button type="submit">가입하기</Button>
       </Form>

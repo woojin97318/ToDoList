@@ -1,42 +1,81 @@
-import React, { useState } from "react";
-import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
+import * as ApiService from '../service/ApiService';
 
-function Login() {
+function Login({ memberInfo, changeMemberInfo }) {
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-  function handleSubmit(event) {
+  useEffect(() => {
+    if (memberInfo.token !== '' && memberInfo.token !== undefined) {
+      setError('');
+
+      let apiParam = {
+        token: memberInfo.token
+      };
+
+      ApiService.getMethod(`member`, apiParam).then((response) => {
+        let member = response.data;
+
+        let authoritys = [];
+        member.authorityDtoSet.map((item) => {
+          let authority = item.authorityName;
+          authoritys = [...authoritys, authority];
+        });
+
+        changeMemberInfo({
+          ...memberInfo,
+          email: member.email,
+          nickname: member.nickname,
+          birthDate: member.birthDate,
+          genderCode: member.genderCode,
+          phoneNo: member.phoneNo,
+          authoritys: authoritys
+        });
+      });
+
+      navigate('/main');
+    } else if (memberInfo.token === undefined) {
+      setError('이메일 또는 비밀번호가 틀립니다.');
+    }
+  }, [memberInfo]);
+
+  function login(event) {
     event.preventDefault();
 
-    // // 서버로 이메일과 비밀번호 전송
-    // if (email === "example@example.com" && password === "password") {
-    //   // 로그인 성공
-    // } else {
-    //   // 로그인 실패
-    //   setError("이메일 또는 비밀번호가 올바르지 않습니다.");
-    // }
+    if (email && password) {
+      setError('');
+
+      const apiParam = {
+        email: email,
+        password: password
+      };
+
+      ApiService.postMethod(`authenticate`, apiParam, {}).then((response) => {
+        let _memberInfo = memberInfo;
+        _memberInfo = { ..._memberInfo, token: response.data.token };
+        changeMemberInfo(_memberInfo);
+      });
+    } else {
+      setError('이메일 또는 비밀번호를 입력해주세요.');
+    }
   }
 
   const handleRegisterClick = () => {
-    navigate("/signup");
+    navigate('/signup');
   };
 
   return (
     <LoginPageWrapper>
       <Title>로그인</Title>
-      <FormWrapper onSubmit={handleSubmit}>
+      <FormWrapper onSubmit={login}>
         <div>
           <Label htmlFor="email">이메일</Label>
-          <Input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+          <Input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} />
         </div>
         <div>
           <Label htmlFor="password">비밀번호</Label>
