@@ -20,16 +20,6 @@ public class MemberController {
         this.memberService = memberService;
     }
 
-    @GetMapping("/hello")
-    public ResponseEntity<String> hello() {
-        return ResponseEntity.ok("hello");
-    }
-
-    @PostMapping("/test-redirect")
-    public void testRedirect(HttpServletResponse response) throws IOException {
-        response.sendRedirect("/api/user");
-    }
-
     /**
      * 회원가입
      */
@@ -38,12 +28,18 @@ public class MemberController {
         return ResponseEntity.ok(memberService.signup(memberDTO));
     }
 
+    /**
+     * 모든 사용자 정보 조회
+     */
     @GetMapping("/member")
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public ResponseEntity<MemberDTO> getMyMemberInfo(HttpServletRequest request) {
         return ResponseEntity.ok(memberService.getMyMemberWithAuthorities());
     }
 
+    /**
+     * Admin 사용자 정보 조회
+     */
     @GetMapping("/member/{email}")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<MemberDTO> getMemberInfo(@PathVariable String email) {
