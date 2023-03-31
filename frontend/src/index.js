@@ -2,6 +2,10 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter as Router } from 'react-router-dom';
 import App from './App';
+import dayjs from 'dayjs';
+
+// dayjs 전역 locale 설정
+dayjs.locale('ko');
 
 const rootElement = document.getElementById('root');
 const root = createRoot(rootElement);

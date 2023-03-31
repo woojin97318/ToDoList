@@ -47,9 +47,6 @@ public class MemberService {
         return MemberDTO.from(memberRepository.save(member));
     }
 
-    /**
-     * 현재 SecurityContext에 저장된 username의 정보만 가져온다.
-     */
     @Transactional(readOnly = true)
     public MemberDTO getMyMemberWithAuthorities() {
         return MemberDTO.from(
@@ -59,9 +56,6 @@ public class MemberService {
         );
     }
 
-    /**
-     * username을 파라미터로 받아서 어떠한 username이든 해당 User객체와 권한 정보 리턴
-     */
     @Transactional(readOnly = true)
     public MemberDTO getMemberWithAuthorities(String email) {
         return MemberDTO.from(memberRepository.findOneWithAuthoritiesByEmail(email).orElse(null));

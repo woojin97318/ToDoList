@@ -4,12 +4,15 @@ import com.sqistudy.todolist.domain.BaseEntity;
 import com.sqistudy.todolist.domain.todo.Todo;
 import com.sqistudy.todolist.domain.member.Member;
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.*;
 
 import java.util.List;
 
-@Getter
 @Entity
+@Getter @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "tb_todo_group", schema = "todolist")
 public class TodoGroup {//extends BaseEntity {
 
@@ -25,8 +28,8 @@ public class TodoGroup {//extends BaseEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "description")
-    private String description;
+//    @Column(name = "description")
+//    private String description;
 
     @OneToMany(mappedBy = "group")
     private List<Todo> toDoList;

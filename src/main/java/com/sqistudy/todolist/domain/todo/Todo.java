@@ -3,12 +3,15 @@ package com.sqistudy.todolist.domain.todo;
 import com.sqistudy.todolist.domain.BaseEntity;
 import com.sqistudy.todolist.domain.todogroup.TodoGroup;
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.*;
 
 import java.time.LocalDate;
 
 @Entity
-@Getter
+@Getter @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "tb_todo", schema = "todolist")
 public class Todo {//extends BaseEntity {
 
@@ -33,6 +36,6 @@ public class Todo {//extends BaseEntity {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "content")
-    private String content;
+//    @Column(name = "content")
+//    private String content;
 }

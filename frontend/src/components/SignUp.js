@@ -3,10 +3,9 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import styled from 'styled-components';
 import * as ApiService from '../service/ApiService';
-import { useNavigate } from 'react-router-dom';
 
-const SignUp = () => {
-  const navigate = useNavigate();
+const SignUp = (props) => {
+  const { navigate } = props;
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

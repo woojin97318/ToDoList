@@ -1,31 +1,84 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import moment from 'moment/moment';
 import Config from '../config/Config';
+import * as ApiService from '../service/ApiService';
+import dayjs from 'dayjs';
 
-const Main = ({ memberInfo }) => {
-  const [date, setDate] = useState(moment());
+const Main = (props) => {
+  const { navigate, token } = props;
+
+  const [memberInfo, setMemberInfo] = useState({
+    memberId: '',
+    email: '',
+    nickname: '',
+    birthDate: '',
+    genderCode: '',
+    phoneNo: '',
+    authoritys: []
+  });
+  const [date, setDate] = useState(dayjs());
+  const [group, setGroup] = useState([]);
+  const [selectedGroup, setSelectedGroup] = useState(0);
   const [todos, setTodos] = useState([]);
   const [todo, setTodo] = useState('');
 
   useEffect(() => {
+    if (token !== '' && token !== undefined) {
+      ApiService.getMethod(`member`, { token: token }).then((response) => {
+        let member = response.data;
+
+        let authoritys = [];
+        member.authorityDtoSet.map((item) => {
+          let authority = item.authorityName;
+          authoritys = [...authoritys, authority];
+        });
+
+        setMemberInfo({
+          ...memberInfo,
+          memberId: member.memberId,
+          email: member.email,
+          nickname: member.nickname,
+          birthDate: member.birthDate,
+          genderCode: member.genderCode,
+          phoneNo: member.phoneNo,
+          authoritys: authoritys
+        });
+      });
+    } else {
+      alert('로그인이 필요합니다.');
+      navigate('/');
+    }
+  }, [memberInfo, navigate, token]);
+
+  useEffect(() => {
     // 해당 날짜의 todo 조회
-  }, [date]);
+    console.log(dayjs(date).format(Config.defaultDateDisplayFormat));
+    console.log(group);
+  }, [date, group]);
+
+  useEffect(() => {
+    // memberId기준, date기준으로 선택된 그룹에 대한 todo 가져오기
+    // API를 호출하여 그룹 데이터 가져오기
+    // 가져온 데이터를 setGroup 함수를 사용하여 group 상태를 업데이트
+  }, []);
+
+  const handleSelectGroup = (index) => {
+    setSelectedGroup(index);
+  };
 
   const handlePrevDay = () => {
-    setDate(moment(date).add(-1, 'days'));
+    setDate(dayjs(date).add(-1, 'days'));
   };
 
   const handleNextDay = () => {
-    setDate(moment(date).add(1, 'days'));
+    setDate(dayjs(date).add(1, 'days'));
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!todo || !date) return;
-    setTodos([...todos, { todo, date }]);
-    setTodo('');
-    // setDate(new Date());
+    // e.preventDefault();
+    // if (!todo || !date) return;
+    // setTodos([...todos, { todo, date }]);
+    // setTodo('');
   };
 
   return (
@@ -40,23 +93,29 @@ const Main = ({ memberInfo }) => {
         <span onClick={handleNextDay}>&#8250;</span>
       </DateHeader>
 
-      <form onSubmit={handleSubmit}>
+      <GroupWrapper>
+        <GroupTab type="button">group1</GroupTab>
+        <GroupTab type="button">group2</GroupTab>
+        <GroupPlusTab type="button">+</GroupPlusTab>
+      </GroupWrapper>
+
+      <FormWrapper onSubmit={handleSubmit}>
         <Input
           type="text"
           placeholder="Add Todo"
           value={todo}
           onChange={(e) => setTodo(e.target.value)}
         />
-        <button type="submit">Add</button>
-      </form>
+        <Button type="submit">+</Button>
+      </FormWrapper>
       <ul>
-        {todos
+        {/* {todos
           .filter((item) => item.date.toDateString() === date.toDateString())
           .map((item, index) => (
             <li key={index}>
               {item.todo} ({item.date.toLocaleTimeString()})
             </li>
-          ))}
+          ))} */}
       </ul>
     </Container>
   );
@@ -68,16 +127,20 @@ const Container = styled.div`
   padding: 20px;
 `;
 
+const UserInfo = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+`;
+
+const Username = styled.span`
+  margin-right: 10px;
+  font-weight: bold;
+`;
+
 const Header = styled.h1`
   text-align: center;
   margin-bottom: 30px;
-`;
-
-const Input = styled.input`
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 20px;
-  font-size: 18px;
 `;
 
 const DateHeader = styled.h2`
@@ -93,15 +156,71 @@ const DateHeader = styled.h2`
   }
 `;
 
-const UserInfo = styled.div`
+const GroupWrapper = styled.div`
   display: flex;
-  justify-content: flex-end;
-  margin-bottom: 20px;
+  flex-direction: row;
+  margin-bottom: 10px;
 `;
 
-const Username = styled.span`
-  margin-right: 10px;
-  font-weight: bold;
+const GroupTab = styled.button`
+  display: flex;
+  flex-direction: column;
+  font-size: 20px;
+  border-radius: 5px;
+  border: none;
+  margin-right: 5px;
+
+  &:hover {
+    font-weight: bold;
+  }
+`;
+
+const GroupPlusTab = styled.button`
+  display: flex;
+  flex-direction: column;
+  font-size: 20px;
+  border-radius: 5px;
+  border: none;
+
+  &:hover {
+    font-weight: bold;
+  }
+`;
+
+const FormWrapper = styled.form`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: #f7f7f7;
+  border-radius: 10px;
+  padding: 40px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+`;
+
+const Input = styled.input`
+  width: 90%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  border: none;
+  font-size: 18px;
+`;
+
+const Button = styled.button`
+  width: 10%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  border: none;
+  background-color: #0077ff;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    background-color: #0062cc;
+  }
 `;
 
 export default Main;

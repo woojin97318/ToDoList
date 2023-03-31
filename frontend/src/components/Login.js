@@ -1,50 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
 import * as ApiService from '../service/ApiService';
 
-function Login({ memberInfo, changeMemberInfo }) {
-  const navigate = useNavigate();
+function Login(props) {
+  const { navigate, changeToken } = props;
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    if (memberInfo.token !== '' && memberInfo.token !== undefined) {
-      setError('');
-
-      let apiParam = {
-        token: memberInfo.token
-      };
-
-      ApiService.getMethod(`member`, apiParam).then((response) => {
-        let member = response.data;
-
-        let authoritys = [];
-        member.authorityDtoSet.map((item) => {
-          let authority = item.authorityName;
-          authoritys = [...authoritys, authority];
-        });
-
-        changeMemberInfo({
-          ...memberInfo,
-          email: member.email,
-          nickname: member.nickname,
-          birthDate: member.birthDate,
-          genderCode: member.genderCode,
-          phoneNo: member.phoneNo,
-          authoritys: authoritys
-        });
-      });
-
-      navigate('/main');
-    } else if (memberInfo.token === undefined) {
-      setError('이메일 또는 비밀번호가 틀립니다.');
-    }
-  }, [memberInfo]);
-
-  function login(event) {
+  const login = (event) => {
     event.preventDefault();
 
     if (email && password) {
@@ -56,14 +21,18 @@ function Login({ memberInfo, changeMemberInfo }) {
       };
 
       ApiService.postMethod(`authenticate`, apiParam, {}).then((response) => {
-        let _memberInfo = memberInfo;
-        _memberInfo = { ..._memberInfo, token: response.data.token };
-        changeMemberInfo(_memberInfo);
+        if (response.status !== 200) {
+          setError('이메일 또는 비밀번호가 일치하지 않습니다.');
+        } else {
+          let token = response.data.token;
+          changeToken(token);
+          navigate('/main');
+        }
       });
     } else {
       setError('이메일 또는 비밀번호를 입력해주세요.');
     }
-  }
+  };
 
   const handleRegisterClick = () => {
     navigate('/signup');

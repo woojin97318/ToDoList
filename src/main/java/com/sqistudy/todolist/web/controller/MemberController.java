@@ -3,13 +3,10 @@ package com.sqistudy.todolist.web.controller;
 import com.sqistudy.todolist.service.MemberService;
 import com.sqistudy.todolist.web.dto.MemberDTO;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.IOException;
 
 @RestController
 @RequestMapping("/api")
@@ -29,7 +26,7 @@ public class MemberController {
     }
 
     /**
-     * 모든 사용자 정보 조회
+     * 현재 SecurityContext에 저장된 member 조회
      */
     @GetMapping("/member")
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
@@ -38,7 +35,7 @@ public class MemberController {
     }
 
     /**
-     * Admin 사용자 정보 조회
+     * admin 권한을 가진 member 조회
      */
     @GetMapping("/member/{email}")
     @PreAuthorize("hasAnyRole('ADMIN')")

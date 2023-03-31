@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class MemberDTO {
 
+   private Long memberId;
+
    private String email;
 
    private String password;
@@ -32,6 +34,7 @@ public class MemberDTO {
       if(member == null) return null;
 
       return MemberDTO.builder()
+              .memberId(member.getMemberId())
               .email(member.getEmail())
               .nickname(member.getNickname())
               .birthDate(member.getBirthDate())
