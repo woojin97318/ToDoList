@@ -28,9 +28,6 @@ public class TodoGroup {//extends BaseEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
-//    @Column(name = "description")
-//    private String description;
-
     @OneToMany(mappedBy = "group")
     private List<Todo> toDoList;
 }

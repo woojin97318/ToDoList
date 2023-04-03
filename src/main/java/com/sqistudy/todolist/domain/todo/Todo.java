@@ -35,7 +35,4 @@ public class Todo {//extends BaseEntity {
 
     @Column(name = "title", nullable = false)
     private String title;
-
-//    @Column(name = "content")
-//    private String content;
 }
