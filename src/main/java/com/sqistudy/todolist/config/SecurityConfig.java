@@ -61,9 +61,9 @@ public class SecurityConfig {
                 .and()
                 .authorizeHttpRequests()
                 .requestMatchers(
-                        "/api/hello",
-                        "/api/authenticate",
-                        "/api/signup").permitAll() // 해당 url은 토큰 인증 없이 접근 가능
+                        "/api/login",
+                        "/api/signup"
+                ).permitAll() // 해당 url은 토큰 인증 없이 접근 가능
                 .anyRequest().authenticated()
 
                 .and()

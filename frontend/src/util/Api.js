@@ -1,5 +1,6 @@
 import axios from 'axios';
 import Config from '../config/Config';
+import { getToken } from './Auth';
 
 const Api = axios.create({
   baseURL: `${process.env.REACT_APP_LOCAL_API_URL}/`,
@@ -13,8 +14,10 @@ Api.defaults.headers.post['Content-Type'] = 'application/json';
 // 요청 인터셉터
 Api.interceptors.request.use(
   function (config) {
-    if (config.url === 'api/member') {
-      let token = config.params.token;
+    console.log('Api.interceptors.request SUCCESS');
+
+    let token = getToken();
+    if (config.url && !config.url.includes('api/login') && !config.url.includes('api/signup')) {
       config.headers[`Authorization`] = `Bearer ${token}`;
     } else {
       config.headers[`Authorization`] = ``;
@@ -23,6 +26,8 @@ Api.interceptors.request.use(
     return config;
   },
   function (error) {
+    console.log('Api.interceptors.request ERROR');
+
     return Promise.reject(error);
   }
 );
@@ -30,9 +35,15 @@ Api.interceptors.request.use(
 // 응답 인터셉터
 Api.interceptors.response.use(
   function (response) {
+    console.log('Api.interceptors.response SUCCESS');
+
     return response;
   },
   function (error) {
+    console.log('Api.interceptors.response ERROR');
+
+    console.log(error);
+
     // let errorResponse = error.response || {};
     // let status = errorResponse.status;
     // let requestConfig = error.config;

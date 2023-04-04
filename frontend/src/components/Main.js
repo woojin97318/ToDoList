@@ -3,9 +3,11 @@ import styled from 'styled-components';
 import Config from '../config/Config';
 import * as ApiService from '../service/ApiService';
 import dayjs from 'dayjs';
+import { getToken } from '../util/Auth';
 
 const Main = (props) => {
-  const { navigate, token } = props;
+  const { navigate } = props;
+  const token = getToken();
 
   const [memberInfo, setMemberInfo] = useState({
     memberId: '',
@@ -17,15 +19,16 @@ const Main = (props) => {
     authoritys: []
   });
   const [date, setDate] = useState(dayjs());
-  const [group, setGroup] = useState([]);
+  const [groups, setGroups] = useState([]);
   const [selectedGroup, setSelectedGroup] = useState(0);
   const [todos, setTodos] = useState([]);
   const [todo, setTodo] = useState('');
 
+  // 회원 정보 조회
   useEffect(() => {
-    if (token !== '' && token !== undefined) {
-      ApiService.getMethod(`member`, { token: token }).then((response) => {
-        let member = response.data;
+    if (token !== '' && token !== null) {
+      ApiService.getMethod(`member`, { token: token }).then((res) => {
+        let member = res.data;
 
         let authoritys = [];
         member.authorityDtoSet.map((item) => {
@@ -48,19 +51,22 @@ const Main = (props) => {
       alert('로그인이 필요합니다.');
       navigate('/');
     }
-  }, [memberInfo, navigate, token]);
+  }, [token]);
 
   useEffect(() => {
-    // 해당 날짜의 todo 조회
-    console.log(dayjs(date).format(Config.defaultDateDisplayFormat));
-    console.log(group);
-  }, [date, group]);
+    if (memberInfo.memberId !== '') {
+      ApiService.getMethod(`todo-groups/${memberInfo.memberId}`).then((res) => {
+        let groups = res.data;
+        setGroups(groups);
+      });
+    }
+  }, [memberInfo]);
 
-  useEffect(() => {
-    // memberId기준, date기준으로 선택된 그룹에 대한 todo 가져오기
-    // API를 호출하여 그룹 데이터 가져오기
-    // 가져온 데이터를 setGroup 함수를 사용하여 group 상태를 업데이트
-  }, []);
+  // useEffect(() => {
+  //   // memberId기준, date기준으로 선택된 그룹에 대한 todo 가져오기
+  //   // API를 호출하여 그룹 데이터 가져오기
+  //   // 가져온 데이터를 setGroup 함수를 사용하여 group 상태를 업데이트
+  // }, []);
 
   const handleSelectGroup = (index) => {
     setSelectedGroup(index);
@@ -94,9 +100,16 @@ const Main = (props) => {
       </DateHeader>
 
       <GroupWrapper>
-        <GroupTab type="button">group1</GroupTab>
-        <GroupTab type="button">group2</GroupTab>
-        <GroupPlusTab type="button">+</GroupPlusTab>
+        {groups.map((item) => {
+          console.log(item);
+
+          return (
+            <GroupTab key={item.groupId} type="button">
+              {item.name}
+            </GroupTab>
+          );
+        })}
+        <GroupPlusTab>+</GroupPlusTab>
       </GroupWrapper>
 
       <FormWrapper onSubmit={handleSubmit}>

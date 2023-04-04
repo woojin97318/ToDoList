@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import * as ApiService from '../service/ApiService';
+import { setToken } from '../util/Auth';
 
 function Login(props) {
-  const { navigate, changeToken } = props;
+  const { navigate } = props;
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -20,12 +21,12 @@ function Login(props) {
         password: password
       };
 
-      ApiService.postMethod(`authenticate`, apiParam, {}).then((response) => {
+      ApiService.postMethod(`login`, apiParam, {}).then((response) => {
         if (response.status !== 200) {
           setError('이메일 또는 비밀번호가 일치하지 않습니다.');
         } else {
           let token = response.data.token;
-          changeToken(token);
+          setToken(token);
           navigate('/main');
         }
       });

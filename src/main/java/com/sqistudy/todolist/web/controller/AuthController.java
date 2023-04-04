@@ -31,7 +31,7 @@ public class AuthController {
     /**
      * 로그인
      */
-    @PostMapping("/authenticate")
+    @PostMapping("/login")
     public ResponseEntity<TokenDTO> authorize(@Valid @RequestBody LoginDTO login) {
 
         UsernamePasswordAuthenticationToken authenticationToken =
