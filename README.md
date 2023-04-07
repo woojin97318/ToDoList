@@ -25,9 +25,11 @@ ToDoList in Sqi Study
 
 ### 3주차 JPA 매핑 어노테이션 활용하기 & JPQL(Java Persistence Query Language) 이해하기
 
-- [JPA 매핑 어노테이션](https://velog.io/@wujin/JPA-Annotation)
+- [JPA 매핑 어노테이션](https://velog.io/@wujin/JPA-Mapping-Annotation)
 - [JPQL(Java Persistence Query Language) 이해하기](https://velog.io/@wujin/JPQLJava-Persistence-Query-Language-%EC%9D%B4%ED%95%B4%ED%95%98%EA%B8%B0)
 
 ---
 
-### 4주차
+### 4주차 
+
+- [JPA 프로바이더 이해하기](https://velog.io/@wujin/JPA-Provider)

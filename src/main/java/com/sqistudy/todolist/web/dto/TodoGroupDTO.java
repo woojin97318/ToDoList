@@ -10,8 +10,11 @@ public class TodoGroupDTO {
 
     private String name;
 
-    public void from(TodoGroup todoGroup) {
-        this.groupId = todoGroup.getGroupId();
-        this.name = todoGroup.getName();
+    public static TodoGroupDTO from(TodoGroup todoGroup) {
+        TodoGroupDTO dto = new TodoGroupDTO();
+        dto.groupId = todoGroup.getGroupId();
+        dto.name = todoGroup.getName();
+
+        return dto;
     }
 }

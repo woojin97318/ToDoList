@@ -1,5 +1,6 @@
 package com.sqistudy.todolist.domain.todogroup;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sqistudy.todolist.domain.BaseEntity;
 import com.sqistudy.todolist.domain.todo.Todo;
 import com.sqistudy.todolist.domain.member.Member;

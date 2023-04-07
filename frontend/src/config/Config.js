@@ -11,7 +11,7 @@ Config.apiTimeout = 30000;
 Config.defaultDateDisplayFormat = 'YYYY년 MM월 DD일';
 Config.defaultTimeDisplayFormat = 'HH:mm';
 
-Config.defaultDateValueFormat = 'yyyy-MM-DD';
+Config.defaultDateValueFormat = 'YYYY-MM-DD';
 Config.defaultTimeValueFormat = 'HH:mm';
 
 export default Config;

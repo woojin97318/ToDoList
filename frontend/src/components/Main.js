@@ -4,9 +4,11 @@ import Config from '../config/Config';
 import * as ApiService from '../service/ApiService';
 import dayjs from 'dayjs';
 import { getToken } from '../util/Auth';
+import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 
 const Main = (props) => {
   const { navigate } = props;
+
   const token = getToken();
 
   const [memberInfo, setMemberInfo] = useState({
@@ -20,9 +22,11 @@ const Main = (props) => {
   });
   const [date, setDate] = useState(dayjs());
   const [groups, setGroups] = useState([]);
-  const [selectedGroup, setSelectedGroup] = useState(0);
+  const [selectedGroupId, setSelectedGroupId] = useState(0);
   const [todos, setTodos] = useState([]);
   const [todo, setTodo] = useState('');
+  const [changeStatus, setChangeStatus] = useState(0);
+  const [error, setError] = useState('');
 
   // 회원 정보 조회
   useEffect(() => {
@@ -53,23 +57,36 @@ const Main = (props) => {
     }
   }, [token]);
 
+  // 그룹 조회
   useEffect(() => {
     if (memberInfo.memberId !== '') {
       ApiService.getMethod(`todo-groups/${memberInfo.memberId}`).then((res) => {
-        let groups = res.data;
+        const groups = res.data;
         setGroups(groups);
+
+        const groupId = groups[0].groupId;
+        setSelectedGroupId(groupId);
       });
     }
   }, [memberInfo]);
 
-  // useEffect(() => {
-  //   // memberId기준, date기준으로 선택된 그룹에 대한 todo 가져오기
-  //   // API를 호출하여 그룹 데이터 가져오기
-  //   // 가져온 데이터를 setGroup 함수를 사용하여 group 상태를 업데이트
-  // }, []);
+  // todo 조회
+  useEffect(() => {
+    if (groups.length !== 0 && selectedGroupId !== 0) {
+      const apiParam = {
+        groupId: selectedGroupId,
+        date: dayjs(date).format(Config.defaultDateValueFormat)
+      };
 
-  const handleSelectGroup = (index) => {
-    setSelectedGroup(index);
+      ApiService.getMethod(`todos`, apiParam).then((res) => {
+        const todos = res.data;
+        setTodos(todos);
+      });
+    }
+  }, [date, groups, selectedGroupId, changeStatus]);
+
+  const handleSelectGroup = (groupId) => {
+    setSelectedGroupId(groupId);
   };
 
   const handlePrevDay = () => {
@@ -80,11 +97,58 @@ const Main = (props) => {
     setDate(dayjs(date).add(1, 'days'));
   };
 
-  const handleSubmit = (e) => {
-    // e.preventDefault();
-    // if (!todo || !date) return;
-    // setTodos([...todos, { todo, date }]);
-    // setTodo('');
+  const addTodo = (e) => {
+    e.preventDefault();
+
+    const title = todo.trim();
+    if (title.length === 0) {
+      setError('할 일을 입력해주세요.');
+    } else {
+      setError('');
+      const apiParam = {
+        groupId: selectedGroupId,
+        date: dayjs(date).format(Config.defaultDateValueFormat),
+        completeYn: 'N',
+        disOrder: todos.length + 1,
+        title: title
+      };
+
+      ApiService.postMethod(`todo`, apiParam).then((res) => {
+        const status = res.status;
+        if (status !== 200) {
+          alert('addTodo Error');
+          return;
+        }
+
+        setChangeStatus(changeStatus + 1);
+      });
+    }
+
+    setTodo('');
+  };
+
+  const changeCompleteYn = (todoId) => {
+    ApiService.patchMethod(`complete/${todoId}`).then((res) => {
+      const status = res.status;
+      if (status !== 200) {
+        alert('changeCompleteYn Error');
+        return;
+      }
+
+      setChangeStatus(changeStatus + 1);
+    });
+  };
+
+  const deleteTodo = (todoId) => {
+    ApiService.deleteMethod(`todo/${todoId}`).then((res) => {
+      const status = res.status;
+      if (status !== 200) {
+        alert('deleteTodo Error');
+        return;
+      }
+
+      setChangeStatus(changeStatus + 1);
+    });
   };
 
   return (
@@ -92,7 +156,9 @@ const Main = (props) => {
       <UserInfo>
         <Username>{memberInfo.nickname}</Username>
       </UserInfo>
+
       <Header>Todo List</Header>
+
       <DateHeader>
         <span onClick={handlePrevDay}>&#8249;</span>
         {date.format(Config.defaultDateDisplayFormat)}
@@ -101,10 +167,12 @@ const Main = (props) => {
 
       <GroupWrapper>
         {groups.map((item) => {
-          console.log(item);
-
           return (
-            <GroupTab key={item.groupId} type="button">
+            <GroupTab
+              key={item.groupId}
+              onClick={() => handleSelectGroup(item.groupId)}
+              style={{ fontWeight: selectedGroupId === item.groupId && 'bold' }}
+            >
               {item.name}
             </GroupTab>
           );
@@ -112,24 +180,41 @@ const Main = (props) => {
         <GroupPlusTab>+</GroupPlusTab>
       </GroupWrapper>
 
-      <FormWrapper onSubmit={handleSubmit}>
-        <Input
-          type="text"
-          placeholder="Add Todo"
-          value={todo}
-          onChange={(e) => setTodo(e.target.value)}
-        />
-        <Button type="submit">+</Button>
-      </FormWrapper>
-      <ul>
-        {/* {todos
-          .filter((item) => item.date.toDateString() === date.toDateString())
-          .map((item, index) => (
-            <li key={index}>
-              {item.todo} ({item.date.toLocaleTimeString()})
-            </li>
-          ))} */}
-      </ul>
+      <Div>
+        <FormWrapper onSubmit={addTodo}>
+          <Input
+            type="text"
+            placeholder="Add Todo"
+            value={todo}
+            onChange={(e) => setTodo(e.target.value)}
+          />
+          <Button type="submit">+</Button>
+        </FormWrapper>
+        {error && <ErrorMessage>{error}</ErrorMessage>}
+      </Div>
+
+      <TodosWrapper>
+        {todos.map((item) => {
+          return (
+            <TodoWrapper key={item.todoId}>
+              <input
+                type="checkbox"
+                checked={item.completeYn === 'Y'}
+                onChange={() => changeCompleteYn(item.todoId)}
+              />
+              <TodoLable style={{ textDecoration: item.completeYn === 'Y' && 'line-through' }}>
+                {item.title}
+              </TodoLable>
+              <DeleteOutlinedIcon
+                fontSize="small"
+                style={{ marginLeft: '5px' }}
+                onClick={() => deleteTodo(item.todoId)}
+              />
+            </TodoWrapper>
+          );
+        })}
+        {todos.length === 0 && <div>할 일을 등록하세요!</div>}
+      </TodosWrapper>
     </Container>
   );
 };
@@ -184,7 +269,7 @@ const GroupTab = styled.button`
   margin-right: 5px;
 
   &:hover {
-    font-weight: bold;
+    border: 1px solid;
   }
 `;
 
@@ -203,7 +288,11 @@ const GroupPlusTab = styled.button`
 const FormWrapper = styled.form`
   display: flex;
   flex-direction: row;
-  align-items: center;
+`;
+
+const Div = styled.div`
+  display: flex;
+  flex-direction: column;
   background-color: #f7f7f7;
   border-radius: 10px;
   padding: 40px;
@@ -234,6 +323,33 @@ const Button = styled.button`
   &:hover {
     background-color: #0062cc;
   }
+`;
+
+const TodosWrapper = styled.ul`
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 40px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+`;
+
+const TodoLable = styled.label`
+  font-size: 18px;
+  margin-left: 10px;
+`;
+
+const TodoWrapper = styled.li`
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 15px;
+`;
+
+const ErrorMessage = styled.div`
+  color: red;
+  font-size: 16px;
+  margin-bottom: 20px;
 `;
 
 export default Main;

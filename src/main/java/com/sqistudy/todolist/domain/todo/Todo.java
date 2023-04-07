@@ -35,4 +35,8 @@ public class Todo {//extends BaseEntity {
 
     @Column(name = "title", nullable = false)
     private String title;
+
+    public void changeCompleteYn() {
+        this.completeYn = this.completeYn.equals("N") ? "Y" : "N";
+    }
 }
