@@ -23,6 +23,7 @@ const Main = (props) => {
   const [date, setDate] = useState(dayjs());
   const [groups, setGroups] = useState([]);
   const [selectedGroupId, setSelectedGroupId] = useState(0);
+  const [newGroup, setNewGroup] = useState('');
   const [todos, setTodos] = useState([]);
   const [todo, setTodo] = useState('');
   const [changeStatus, setChangeStatus] = useState(0);
@@ -85,16 +86,52 @@ const Main = (props) => {
     }
   }, [date, groups, selectedGroupId, changeStatus]);
 
-  const handleSelectGroup = (groupId) => {
-    setSelectedGroupId(groupId);
-  };
-
   const handlePrevDay = () => {
     setDate(dayjs(date).add(-1, 'days'));
   };
 
   const handleNextDay = () => {
     setDate(dayjs(date).add(1, 'days'));
+  };
+
+  // 그룹 선택
+  const handleSelectGroup = (groupId) => {
+    setSelectedGroupId(groupId);
+  };
+
+  // 그룹 추가
+  const createGroup = (e) => {
+    e.preventDefault();
+
+    const group = newGroup.trim();
+    if (group.length === 0) {
+      setNewGroup('');
+    } else {
+      ApiService.postMethod(`todo/group`, { name: newGroup }).then((res) => {
+        const status = res.status;
+        console.log(status);
+        if (status !== 200) {
+          alert('add Group Error');
+          return;
+        }
+        window.location.reload();
+      });
+    }
+  };
+
+  // 그룹 삭제
+  const deleteGroup = () => {
+    if (window.confirm('선택된 그룹을 삭제하시겠습니까?')) {
+      ApiService.deleteMethod(`todo/group/${selectedGroupId}`).then((res) => {
+        const status = res.status;
+        if (status !== 200) {
+          alert('delete Group Error');
+          return;
+        }
+        alert('삭제되었습니다.');
+        window.location.reload();
+      });
+    }
   };
 
   const addTodo = (e) => {
@@ -177,7 +214,21 @@ const Main = (props) => {
             </GroupTab>
           );
         })}
-        <GroupPlusTab>+</GroupPlusTab>
+
+        <form onSubmit={createGroup} style={{ display: 'flex' }}>
+          <input
+            type="text"
+            placeholder="Add Group"
+            value={newGroup}
+            onChange={(e) => setNewGroup(e.target.value)}
+          />
+          <GroupPlusTab onClick={createGroup}>+</GroupPlusTab>
+          <DeleteOutlinedIcon
+            fontSize="small"
+            style={{ marginLeft: '5px' }}
+            onClick={deleteGroup}
+          />
+        </form>
       </GroupWrapper>
 
       <Div>

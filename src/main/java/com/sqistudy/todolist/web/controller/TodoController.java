@@ -1,10 +1,7 @@
 package com.sqistudy.todolist.web.controller;
 
 import com.sqistudy.todolist.service.TodoService;
-import com.sqistudy.todolist.web.dto.TodoDTO;
-import com.sqistudy.todolist.web.dto.TodoGroupDTO;
-import com.sqistudy.todolist.web.dto.TodoSaveDTO;
-import com.sqistudy.todolist.web.dto.TodoSearchDTO;
+import com.sqistudy.todolist.web.dto.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,5 +55,21 @@ public class TodoController {
     @DeleteMapping("/todo/{todoId}")
     public void delete(@PathVariable Long todoId) {
         todoService.delete(todoId);
+    }
+
+    /**
+     * group 추가
+     */
+    @PostMapping("/todo/group")
+    public void createGroup(@RequestBody TodoGroupSaveDTO group) {
+        todoService.createGroup(group);
+    }
+
+    /**
+     * 그룹 삭제
+     */
+    @DeleteMapping("/todo/group/{groupId}")
+    public void deleteGroup(@PathVariable Long groupId) {
+        todoService.deleteGroup(groupId);
     }
 }

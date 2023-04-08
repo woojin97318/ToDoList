@@ -29,6 +29,6 @@ public class TodoGroup {//extends BaseEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "group")
+    @OneToMany(mappedBy = "group", cascade = CascadeType.REMOVE)
     private List<Todo> toDoList;
 }

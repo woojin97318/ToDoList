@@ -1,5 +1,7 @@
 package com.sqistudy.todolist.service;
 
+import com.sqistudy.todolist.common.exception.ApiException;
+import com.sqistudy.todolist.common.exception.ErrorMessage;
 import com.sqistudy.todolist.domain.authority.Authority;
 import com.sqistudy.todolist.domain.member.Member;
 import com.sqistudy.todolist.domain.member.MemberRepository;
@@ -21,6 +23,11 @@ public class MemberService {
     public MemberService(MemberRepository memberRepository, PasswordEncoder passwordEncoder) {
         this.memberRepository = memberRepository;
         this.passwordEncoder = passwordEncoder;
+    }
+
+    public Member findMember(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new ApiException("MemberId Not Found", ErrorMessage.USER_NOT_FOUND));
     }
 
     @Transactional
