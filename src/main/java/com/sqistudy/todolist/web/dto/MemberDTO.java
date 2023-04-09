@@ -31,7 +31,7 @@ public class MemberDTO {
    private Set<AuthorityDTO> authorityDtoSet;
 
    public static MemberDTO from(Member member) {
-      if(member == null) return null;
+      if (member == null) return null;
 
       return MemberDTO.builder()
               .memberId(member.getMemberId())

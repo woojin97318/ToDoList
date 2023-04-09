@@ -22,25 +22,21 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseEntity {
 
-    @NotNull
     @CreatedDate
     @Column(name = "cre_time", nullable = false)
     protected LocalDateTime creTime;
 
-    @NotBlank
     @CreatedBy
     @Column(name = "cre_memb_id", nullable = false)
-    protected String creMembId;
+    protected Long creMembId;
 
-    @NotNull
     @LastModifiedDate
     @Column(name = "upd_time", nullable = false)
     protected LocalDateTime updTime;
 
-    @NotBlank
     @LastModifiedBy
     @Column(name = "upd_memb_id", nullable = false)
-    protected String updMembId;
+    protected Long updMembId;
 
 //    abstract public String name();
 }

@@ -1,5 +1,6 @@
 package com.sqistudy.todolist.domain.member;
 
+import com.sqistudy.todolist.domain.BaseEntity;
 import com.sqistudy.todolist.domain.authority.Authority;
 import com.sqistudy.todolist.domain.todogroup.TodoGroup;
 import jakarta.persistence.*;
@@ -15,7 +16,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "tb_member", schema = "todolist")
-public class Member {//extends BaseEntity {
+public class Member extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
