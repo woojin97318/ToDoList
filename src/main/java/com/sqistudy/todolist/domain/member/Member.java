@@ -51,7 +51,7 @@ public class Member extends BaseEntity {
                     @JoinColumn(name = "member_id", referencedColumnName = "member_id")
             },
             inverseJoinColumns = {
-                    @JoinColumn(name = "authority_Name", referencedColumnName = "authority_Name")
+                    @JoinColumn(name = "authority_name", referencedColumnName = "authority_name")
             })
     private Set<Authority> authorities;
 

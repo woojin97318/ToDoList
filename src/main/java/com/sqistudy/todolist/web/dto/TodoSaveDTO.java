@@ -13,19 +13,19 @@ public class TodoSaveDTO {
 
     private LocalDate date;
 
+    private String title;
+
     private String completeYn;
 
     private Integer disOrder;
-
-    private String title;
 
     public Todo toTodo(TodoGroup group) {
         return Todo.builder()
                 .group(group)
                 .date(this.date)
+                .title(this.title)
                 .completeYn(this.completeYn)
                 .disOrder(this.disOrder)
-                .title(this.title)
                 .build();
     }
 }

@@ -3,8 +3,6 @@ package com.sqistudy.todolist.domain;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -27,16 +25,16 @@ public abstract class BaseEntity {
     protected LocalDateTime creTime;
 
     @CreatedBy
-    @Column(name = "cre_memb_id", nullable = false)
-    protected Long creMembId;
+    @Column(name = "cre_member_id", nullable = false)
+    protected Long creMemberId;
 
     @LastModifiedDate
     @Column(name = "upd_time", nullable = false)
     protected LocalDateTime updTime;
 
     @LastModifiedBy
-    @Column(name = "upd_memb_id", nullable = false)
-    protected Long updMembId;
+    @Column(name = "upd_member_id", nullable = false)
+    protected Long updMemberId;
 
 //    abstract public String name();
 }

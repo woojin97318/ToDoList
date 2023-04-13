@@ -10,7 +10,11 @@ import com.sqistudy.todolist.domain.todo.TodoRepository;
 import com.sqistudy.todolist.domain.todogroup.TodoGroup;
 import com.sqistudy.todolist.domain.todogroup.TodoGroupRepository;
 import com.sqistudy.todolist.web.dto.*;
+import com.sqistudy.todolist.web.dto.test.TestDTO;
+import com.sqistudy.todolist.web.dto.test.TestSearchDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,8 +24,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class TodoService {
-
-    private final MemberRepository memberRepository;
 
     private final TodoGroupRepository todoGroupRepository;
     private final TodoRepository todoRepository;
@@ -44,11 +46,16 @@ public class TodoService {
     }
 
     @Transactional
-    public void changeCompleteYn(Long todoId) {
-        Todo todo = todoRepository.findById(todoId)
-                .orElseThrow(() -> new ApiException("TodoId Not Found", ErrorMessage.DATA_NOT_FOUND));
+    public void createGroup(TodoGroupSaveDTO group) {
+        todoGroupRepository.save(group.toTodoGroup());
+    }
 
-        todo.changeCompleteYn();
+    @Transactional
+    public void deleteGroup(Long groupId) {
+        TodoGroup group = todoGroupRepository.findById(groupId)
+                .orElseThrow(() -> new ApiException("GroupId Not Found", ErrorMessage.DATA_NOT_FOUND));
+
+        todoGroupRepository.delete(group);
     }
 
     @Transactional
@@ -68,15 +75,14 @@ public class TodoService {
     }
 
     @Transactional
-    public void createGroup(TodoGroupSaveDTO group) {
-        todoGroupRepository.save(group.toTodoGroup());
+    public void changeCompleteYn(Long todoId) {
+        Todo todo = todoRepository.findById(todoId)
+                .orElseThrow(() -> new ApiException("TodoId Not Found", ErrorMessage.DATA_NOT_FOUND));
+
+        todo.changeCompleteYn();
     }
 
-    @Transactional
-    public void deleteGroup(Long groupId) {
-        TodoGroup group = todoGroupRepository.findById(groupId)
-                        .orElseThrow(() -> new ApiException("GroupId Not Found", ErrorMessage.DATA_NOT_FOUND));
-
-        todoGroupRepository.delete(group);
+    public Page<TestDTO> findTestList(TestSearchDTO search, Pageable pageable) {
+        return todoRepository.findTestList(search, pageable);
     }
 }

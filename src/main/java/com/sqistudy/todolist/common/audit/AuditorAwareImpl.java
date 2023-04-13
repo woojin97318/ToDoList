@@ -15,11 +15,10 @@ public class AuditorAwareImpl implements AuditorAware<Long> {
     public Optional<Long> getCurrentAuditor() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication.getPrincipal().equals("anonymousUser")) {
-            return Optional.of(99999999l);
+            return Optional.of(99999999L);
         }
 
         Long memberId = CommonUtil.getLoginMemberId();
-
         return Optional.of(memberId);
     }
 }

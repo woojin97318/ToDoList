@@ -4,6 +4,7 @@ import com.sqistudy.todolist.domain.member.Member;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -28,7 +29,7 @@ public class MemberDTO {
 
    private String phoneNo;
 
-   private Set<AuthorityDTO> authorityDtoSet;
+   private Set<AuthorityDTO> authorityDtoSet = new HashSet<>();
 
    public static MemberDTO from(Member member) {
       if (member == null) return null;
@@ -43,6 +44,22 @@ public class MemberDTO {
               .authorityDtoSet(member.getAuthorities().stream()
                       .map(authority -> AuthorityDTO.builder().authorityName(authority.getAuthorityName()).build())
                       .collect(Collectors.toSet()))
+              .build();
+   }
+
+   public static MemberDTO from1(Member member) {
+      if (member == null) return null;
+
+      return MemberDTO.builder()
+              .memberId(member.getMemberId())
+              .email(member.getEmail())
+              .nickname(member.getNickname())
+              .birthDate(member.getBirthDate())
+              .genderCode(member.getGenderCode())
+              .phoneNo(member.getPhoneNo())
+//              .authorityDtoSet(member.getAuthorities().stream()
+//                      .map(authority -> AuthorityDTO.builder().authorityName(authority.getAuthorityName()).build())
+//                      .collect(Collectors.toSet()))
               .build();
    }
 }

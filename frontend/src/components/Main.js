@@ -36,10 +36,10 @@ const Main = (props) => {
         let member = res.data;
 
         let authoritys = [];
-        member.authorityDtoSet.map((item) => {
-          let authority = item.authorityName;
-          authoritys = [...authoritys, authority];
-        });
+        // member.authorityDtoSet.map((item) => {
+        //   let authority = item.authorityName;
+        //   authoritys = [...authoritys, authority];
+        // });
 
         setMemberInfo({
           ...memberInfo,

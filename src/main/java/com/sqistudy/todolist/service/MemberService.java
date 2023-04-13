@@ -9,21 +9,22 @@ import com.sqistudy.todolist.common.exception.DuplicateMemberException;
 import com.sqistudy.todolist.common.exception.NotFoundMemberException;
 import com.sqistudy.todolist.common.utils.SecurityUtil;
 import com.sqistudy.todolist.web.dto.MemberDTO;
+import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
+import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public MemberService(MemberRepository memberRepository, PasswordEncoder passwordEncoder) {
-        this.memberRepository = memberRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
+    private final EntityManager em;
 
     public Member findMember(Long memberId) {
         return memberRepository.findById(memberId)
@@ -56,11 +57,22 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public MemberDTO getMyMemberWithAuthorities() {
-        return MemberDTO.from(
-                SecurityUtil.getCurrentUsername()
-                        .flatMap(memberRepository::findOneWithAuthoritiesByEmail)
-                        .orElseThrow(() -> new NotFoundMemberException("Member not found"))
-        );
+        Optional<String> email = SecurityUtil.getCurrentUsername();
+        Member member = memberRepository.findOneWithAuthoritiesByEmail(email.get())
+                .orElseThrow(() -> new NotFoundMemberException("Member not found"));
+
+        return MemberDTO.from(member);
+    }
+
+    @Transactional(readOnly = true)
+    public MemberDTO getMyMemberWithAuthorities1() {
+        Optional<String> email = SecurityUtil.getCurrentUsername();
+//        Member member = memberRepository.findOneWithAuthoritiesByEmail1(email.get())
+//                .orElseThrow(() -> new NotFoundMemberException("Member not found"));
+
+        em.flush();
+
+        return MemberDTO.from1(null);
     }
 
     @Transactional(readOnly = true)

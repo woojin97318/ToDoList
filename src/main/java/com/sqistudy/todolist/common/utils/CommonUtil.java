@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sqistudy.todolist.domain.member.Member;
 import com.sqistudy.todolist.service.MemberService;
+import com.sqistudy.todolist.web.dto.MemberDTO;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,12 +35,13 @@ public class CommonUtil {
     }
 
     @PostConstruct
-    public void initailize() {
+    public void initialize() {
         memberService = tempSerivce;
     }
 
     public static Long getLoginMemberId() {
-        return memberService.getMyMemberWithAuthorities().getMemberId();
+        MemberDTO memberDTO = memberService.getMyMemberWithAuthorities1();
+        return memberDTO.getMemberId();
     }
 
     public static Member getMemberInfo() {

@@ -2,9 +2,14 @@ package com.sqistudy.todolist.web.controller;
 
 import com.sqistudy.todolist.service.TodoService;
 import com.sqistudy.todolist.web.dto.*;
+import com.sqistudy.todolist.web.dto.test.TestDTO;
+import com.sqistudy.todolist.web.dto.test.TestSearchDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,11 +39,19 @@ public class TodoController {
     }
 
     /**
-     * complete 변경
+     * group 추가
      */
-    @PatchMapping("/complete/{todoId}")
-    public void changeCompleteYn(@PathVariable Long todoId) {
-        todoService.changeCompleteYn(todoId);
+    @PostMapping("/todo/group")
+    public void createGroup(@RequestBody TodoGroupSaveDTO group) {
+        todoService.createGroup(group);
+    }
+
+    /**
+     * 그룹 삭제
+     */
+    @DeleteMapping("/todo/group/{groupId}")
+    public void deleteGroup(@PathVariable Long groupId) {
+        todoService.deleteGroup(groupId);
     }
 
     /**
@@ -58,18 +71,20 @@ public class TodoController {
     }
 
     /**
-     * group 추가
+     * complete 변경
      */
-    @PostMapping("/todo/group")
-    public void createGroup(@RequestBody TodoGroupSaveDTO group) {
-        todoService.createGroup(group);
+    @PatchMapping("/complete/{todoId}")
+    public void changeCompleteYn(@PathVariable Long todoId) {
+        todoService.changeCompleteYn(todoId);
     }
 
     /**
-     * 그룹 삭제
+     * Page 객체, QueryDsl 사용한 select
+     * @param search, Pageable(page, size)
      */
-    @DeleteMapping("/todo/group/{groupId}")
-    public void deleteGroup(@PathVariable Long groupId) {
-        todoService.deleteGroup(groupId);
+    @GetMapping("/test")
+    public Page<TestDTO> findTestList(@ModelAttribute TestSearchDTO search,
+                                      @PageableDefault Pageable pageable) {
+        return todoService.findTestList(search, pageable);
     }
 }

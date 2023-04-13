@@ -22,11 +22,12 @@ Api.interceptors.request.use(
     } else {
       config.headers[`Authorization`] = ``;
     }
-
+    console.log(config);
     return config;
   },
   function (error) {
     console.log('Api.interceptors.request ERROR');
+      console.log(error);
 
     return Promise.reject(error);
   }
@@ -36,12 +37,10 @@ Api.interceptors.request.use(
 Api.interceptors.response.use(
   function (response) {
     console.log('Api.interceptors.response SUCCESS');
-
     return response;
   },
   function (error) {
     console.log('Api.interceptors.response ERROR');
-
     console.log(error);
 
     // let errorResponse = error.response || {};
