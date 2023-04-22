@@ -14,7 +14,4 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberCus
 
    @EntityGraph(attributePaths = "authorities")
    Optional<Member> findOneWithAuthoritiesByEmail(String email);
-
-//   @Query(value = "select * from todolist.tb_member as m where m.email = 'admin@admin.com'", nativeQuery = true)
-//   Optional<Member> findOneWithAuthoritiesByEmail(String email);
 }

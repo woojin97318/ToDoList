@@ -19,6 +19,7 @@ public class AuditorAwareImpl implements AuditorAware<Long> {
         }
 
         Long memberId = CommonUtil.getLoginMemberId();
+
         return Optional.of(memberId);
     }
 }

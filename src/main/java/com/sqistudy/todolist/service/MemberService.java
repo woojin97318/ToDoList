@@ -24,8 +24,6 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
-    private final EntityManager em;
-
     public Member findMember(Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new ApiException("MemberId Not Found", ErrorMessage.USER_NOT_FOUND));
@@ -58,7 +56,7 @@ public class MemberService {
     @Transactional(readOnly = true)
     public MemberDTO getMyMemberWithAuthorities() {
         Optional<String> email = SecurityUtil.getCurrentUsername();
-        Member member = memberRepository.findOneWithAuthoritiesByEmail(email.get())
+        Member member = memberRepository.findOneWithAuthoritiesByEmail1(email.get())
                 .orElseThrow(() -> new NotFoundMemberException("Member not found"));
 
         return MemberDTO.from(member);
@@ -67,12 +65,11 @@ public class MemberService {
     @Transactional(readOnly = true)
     public MemberDTO getMyMemberWithAuthorities1() {
         Optional<String> email = SecurityUtil.getCurrentUsername();
-//        Member member = memberRepository.findOneWithAuthoritiesByEmail1(email.get())
-//                .orElseThrow(() -> new NotFoundMemberException("Member not found"));
 
-        em.flush();
+        Member member = memberRepository.findOneWithAuthoritiesByEmail1(email.get())
+                .orElseThrow(() -> new NotFoundMemberException("Member not found"));
 
-        return MemberDTO.from1(null);
+        return MemberDTO.from1(member);
     }
 
     @Transactional(readOnly = true)

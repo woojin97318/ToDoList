@@ -8,8 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Getter
-@Setter
+@Getter @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -41,9 +40,9 @@ public class MemberDTO {
               .birthDate(member.getBirthDate())
               .genderCode(member.getGenderCode())
               .phoneNo(member.getPhoneNo())
-              .authorityDtoSet(member.getAuthorities().stream()
-                      .map(authority -> AuthorityDTO.builder().authorityName(authority.getAuthorityName()).build())
-                      .collect(Collectors.toSet()))
+//              .authorityDtoSet(member.getAuthorities().stream()
+//                      .map(authority -> AuthorityDTO.builder().authorityName(authority.getAuthorityName()).build())
+//                      .collect(Collectors.toSet()))
               .build();
    }
 
