@@ -3,36 +3,48 @@ package com.sqistudy.todolist.common.jwt;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Component
 public class TokenProvider implements InitializingBean {
 
    private final Logger logger = LoggerFactory.getLogger(TokenProvider.class);
+   public static final String AUTHORIZATION_HEADER = "Authorization";
    private static final String AUTHORITIES_KEY = "auth";
    private final String secret;
    private final long tokenValidityInMilliseconds;
    private Key key;
 
+   private static RedisTemplate<String, Object> redisTemplate;
+
+   @Value("${jwt.expiration.ms}")
+   private static int jwtExpirationMs;
+
    public TokenProvider(@Value("${jwt.secret}") String secret,
-                        @Value("${jwt.token-validity-in-seconds}") long tokenValidityInSeconds) {
+                        @Value("${jwt.token-validity-in-seconds}") long tokenValidityInSeconds,
+                        RedisTemplate<String, Object> redisTemplate) {
       this.secret = secret;
       this.tokenValidityInMilliseconds = tokenValidityInSeconds * 1000;
+      TokenProvider.redisTemplate = redisTemplate;
    }
 
    @Override
@@ -89,5 +101,37 @@ public class TokenProvider implements InitializingBean {
          logger.info("JWT 토큰이 잘못되었습니다.");
       }
       return false;
+   }
+
+   public Long getExpiration(String accessToken) {
+      // accessToken 남은 유효시간
+      Date expiration = Jwts.parserBuilder()
+              .setSigningKey(key)
+              .build()
+              .parseClaimsJws(accessToken)
+              .getBody()
+              .getExpiration();
+
+      // 현재 시간
+      Long now = new Date().getTime();
+
+      return expiration.getTime() - now;
+   }
+
+   public static String getTokenFromRequest(HttpServletRequest request) {
+      String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+
+      if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+         return bearerToken.substring(7);
+      }
+      return null;
+   }
+
+   public boolean isJwtBlacklisted(String token) {
+      return redisTemplate.hasKey(token);
+   }
+
+   public static void addToBlacklist(String token) {
+      redisTemplate.opsForValue().set(token, "", jwtExpirationMs, TimeUnit.MILLISECONDS);
    }
 }

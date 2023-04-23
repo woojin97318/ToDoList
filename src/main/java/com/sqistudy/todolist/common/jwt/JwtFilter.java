@@ -17,8 +17,8 @@ import java.io.IOException;
 public class JwtFilter extends GenericFilterBean {
 
    private static final Logger logger = LoggerFactory.getLogger(JwtFilter.class);
-   public static final String AUTHORIZATION_HEADER = "Authorization";
    private final TokenProvider tokenProvider;
+
    public JwtFilter(TokenProvider tokenProvider) {
       this.tokenProvider = tokenProvider;
    }
@@ -28,7 +28,7 @@ public class JwtFilter extends GenericFilterBean {
                         ServletResponse servletResponse,
                         FilterChain filterChain) throws IOException, ServletException {
       HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
-      String jwt = resolveToken(httpServletRequest);
+      String jwt = TokenProvider.getTokenFromRequest(httpServletRequest);
       String requestURI = httpServletRequest.getRequestURI();
 
       if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
@@ -40,15 +40,5 @@ public class JwtFilter extends GenericFilterBean {
       }
 
       filterChain.doFilter(servletRequest, servletResponse);
-   }
-
-   private String resolveToken(HttpServletRequest request) {
-      String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
-
-      if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-         return bearerToken.substring(7);
-      }
-
-      return null;
    }
 }

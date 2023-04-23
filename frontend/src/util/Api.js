@@ -14,7 +14,7 @@ Api.defaults.headers.post['Content-Type'] = 'application/json';
 // 요청 인터셉터
 Api.interceptors.request.use(
   function (config) {
-    console.log('Api.interceptors.request SUCCESS');
+    console.log('SUCCESS request url: ', config.url);
 
     let token = getToken();
     if (config.url && !config.url.includes('api/login') && !config.url.includes('api/signup')) {
@@ -22,13 +22,10 @@ Api.interceptors.request.use(
     } else {
       config.headers[`Authorization`] = ``;
     }
-    console.log(config);
     return config;
   },
   function (error) {
-    console.log('Api.interceptors.request ERROR');
-      console.log(error);
-
+    console.log('Request Error');
     return Promise.reject(error);
   }
 );
@@ -36,13 +33,10 @@ Api.interceptors.request.use(
 // 응답 인터셉터
 Api.interceptors.response.use(
   function (response) {
-    console.log('Api.interceptors.response SUCCESS');
     return response;
   },
   function (error) {
-    console.log('Api.interceptors.response ERROR');
-    console.log(error);
-
+    console.log('Response Error');
     // let errorResponse = error.response || {};
     // let status = errorResponse.status;
     // let requestConfig = error.config;

@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import Config from '../config/Config';
 import * as ApiService from '../service/ApiService';
 import dayjs from 'dayjs';
-import { getToken } from '../util/Auth';
+import { getToken, removeToken } from '../util/Auth';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 
 const Main = (props) => {
@@ -85,6 +85,16 @@ const Main = (props) => {
       });
     }
   }, [date, groups, selectedGroupId, changeStatus]);
+
+  const handleLogout = () => {
+    removeToken();
+    navigate('/');
+
+    // // redis 사용한 logout 중단
+    // ApiService.postMethod(`logout`).then((res) => {
+    //   console.log(res);
+    // });
+  };
 
   const handlePrevDay = () => {
     setDate(dayjs(date).add(-1, 'days'));
@@ -192,6 +202,7 @@ const Main = (props) => {
     <Container>
       <UserInfo>
         <Username>{memberInfo.nickname}</Username>
+        <LogoutBtn onClick={handleLogout}>logout</LogoutBtn>
       </UserInfo>
 
       <Header>Todo List</Header>
@@ -285,6 +296,16 @@ const UserInfo = styled.div`
 const Username = styled.span`
   margin-right: 10px;
   font-weight: bold;
+`;
+
+const LogoutBtn = styled.button`
+  margin-right: 10px;
+  font-weight: bold;
+  border: 0;
+
+  &:hover {
+    border: 1px solid;
+  }
 `;
 
 const Header = styled.h1`
