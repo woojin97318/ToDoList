@@ -6,9 +6,10 @@ import dayjs from 'dayjs';
 import { getToken, removeToken } from '../util/Auth';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 
-const Main = (props) => {
-  const { navigate } = props;
+import { useNavigate } from 'react-router-dom';
 
+const Main = () => {
+  const navigate = useNavigate();
   const token = getToken();
 
   const [memberInfo, setMemberInfo] = useState({
@@ -56,7 +57,7 @@ const Main = (props) => {
       alert('로그인이 필요합니다.');
       navigate('/');
     }
-  }, [token]);
+  }, []);
 
   // 그룹 조회
   useEffect(() => {
