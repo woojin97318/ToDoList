@@ -88,13 +88,13 @@ const Main = () => {
   }, [date, groups, selectedGroupId, changeStatus]);
 
   const handleLogout = () => {
-    removeToken();
-    navigate('/');
+    // removeToken();
+    // navigate('/');
 
     // // redis 사용한 logout 중단
-    // ApiService.postMethod(`logout`).then((res) => {
-    //   console.log(res);
-    // });
+    ApiService.postMethod(`logout`).then((res) => {
+      console.log(res);
+    });
   };
 
   const handlePrevDay = () => {
