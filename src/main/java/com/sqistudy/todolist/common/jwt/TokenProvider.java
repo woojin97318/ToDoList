@@ -33,11 +33,8 @@ public class TokenProvider implements InitializingBean {
    private final String secret;
    private final long tokenValidityInMilliseconds;
    private Key key;
-
    private static RedisTemplate<String, Object> redisTemplate;
-
-   @Value("${jwt.expiration.ms}")
-   private static int jwtExpirationMs;
+   @Value("${jwt.expiration.ms}") public static int jwtExpirationMs;
 
    public TokenProvider(@Value("${jwt.secret}") String secret,
                         @Value("${jwt.token-validity-in-seconds}") long tokenValidityInSeconds,

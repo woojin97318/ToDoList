@@ -1,6 +1,7 @@
 package com.sqistudy.todolist.web.controller;
 
 import com.sqistudy.todolist.common.jwt.TokenProvider;
+import com.sqistudy.todolist.common.utils.JwtUtils;
 import com.sqistudy.todolist.service.AuthService;
 import com.sqistudy.todolist.web.MessageResponse;
 import com.sqistudy.todolist.web.dto.LoginDTO;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.Instant;
 
 @RestController
 @RequestMapping("/api")
@@ -65,8 +68,10 @@ public class AuthController {
          */
 //        TokenProvider.addToBlacklist(token);
 
-        // RDB를 사용하여 Blacklist 테이블에 해당 토근 set
-        authService.setLogoutToken(token);
+        // RDB Table로 Blacklist를 관리
+        // 로그아웃시 해당 토큰 Blacklist Table에 저장
+        Instant expire = JwtUtils.getExpiration(token); // 로그아웃 토근 만료시간
+        authService.setLogoutToken(token, expire);
 
         return ResponseEntity.ok(new MessageResponse("Logged out successfully!"));
     }

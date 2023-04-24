@@ -88,12 +88,13 @@ const Main = () => {
   }, [date, groups, selectedGroupId, changeStatus]);
 
   const handleLogout = () => {
-    // removeToken();
-    // navigate('/');
-
-    // // redis 사용한 logout 중단
+    // redis 사용한 logout 중단
     ApiService.postMethod(`logout`).then((res) => {
-      console.log(res);
+      if (res.status === 200) {
+        alert('로그아웃 성공');
+        removeToken();
+        navigate('/');
+      }
     });
   };
 
