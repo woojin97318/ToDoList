@@ -5,7 +5,6 @@ import com.sqistudy.todolist.domain.todogroup.TodoGroup;
 import jakarta.persistence.*;
 import lombok.*;
 
-
 import java.time.LocalDate;
 
 @Entity

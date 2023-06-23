@@ -14,8 +14,12 @@ public class JwtUtils {
      * 토근 만료시간 조회
      */
     public static Instant getExpiration(String token) {
-        Claims claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
+        Claims claims = Jwts.parser()
+                .setSigningKey(SECRET_KEY)
+                .parseClaimsJws(token)
+                .getBody();
         Date expirationDate = claims.getExpiration();
+
         return expirationDate.toInstant();
     }
 }
